@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.types import StructType, StringType
+import sys
 
 
 spark = SparkSession \
@@ -7,7 +8,7 @@ spark = SparkSession \
     .appName("LinkSocialApp") \
     .getOrCreate()
 
-path = "../"
+path = sys.argv[1]
 
 schema = StructType().add("mac", StringType()).add("ssid", StringType())
 schema2 = StructType().add("ssid", StringType()).add("mac", StringType())
@@ -23,18 +24,6 @@ mac_ssidDF = spark.createDataFrame(mac_ssid, schema)
 ssid_mac = jsonDF.rdd.map(lambda row: Row(row[1], [row[0]])).reduceByKey(lambda x, y: x+y)
 ssid_macDF = spark.createDataFrame(ssid_mac, schema2)
 
-jsonDF.printSchema()
 
-mac_ssidDF.show()
-ssid_macDF.show()
-
-mac_ssid_file = open(path + "mac_ssid.json", "a")
-ssid_mac_file = open(path + "ssid_mac.json", "a")
-
-mac_ssid_file.write(mac_ssidDF.toJSON())
-ssid_mac_file.write(ssid_macDF.toJSON())
-
-
-# 
-# mac_ssidDF.write.mode("append").json(path+"mac_ssidDF")
-# ssid_macDF.write.mode("append").json(path+"ssid_macDF")
+mac_ssidDF.write.mode("append").json(path+"mac_ssid")
+ssid_macDF.write.mode("append").json(path+"ssid_mac")
