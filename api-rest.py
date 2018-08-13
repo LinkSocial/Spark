@@ -228,13 +228,13 @@ def getAllMacsFromSSID(ssid="ssid"):
     dicReturn = {}
     dicData = {}
     if(len(dicSSID.keys()) > 0):
-        amount_macs = len(dicSSID[ssid])
+        popularity = len(dicSSID[ssid])
         dicData["ssid"] = ssid
         dicData["macs"] = dicSSID[ssid]
-        dicData["amount_macs"] = amount_macs
+        dicData["popularity"] = popularity
         dicReturn["status"] = "success"
         dicReturn["data"] = dicData
-        dicReturn["message"] = "Return the amount of Macs of this ssid"
+        dicReturn["message"] = "Return the popularity of Macs of this ssid"
     else:
         dicReturn["status"] = "fail"
         dicReturn["data"] = []
@@ -250,14 +250,14 @@ def getPopularityFromAllSSID():
     if(len(temp) > 0):
         for ssid in temp:
             dicData = {}
-            amount_macs = len(dicSSID[ssid])
+            popularity = len(dicSSID[ssid])
             dicData["ssid"] = ssid
             dicData["macs"] = dicSSID[ssid]
-            dicData["amount_macs"] = amount_macs
+            dicData["popularity"] = popularity
             lista.append(dicData)
         dicReturn["status"] = "success"
         dicReturn["data"] = lista
-        dicReturn["message"] = "Return the amount of Macs of this ssid"
+        dicReturn["message"] = "Return the popularity of Macs of this ssid"
     else:
         dicReturn["status"] = "fail"
         dicReturn["data"] = []
