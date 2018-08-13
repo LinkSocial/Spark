@@ -178,7 +178,7 @@ def getAllMacs():
     return dicReturn
 
 @route('/getfingerprint/<mac>', method="GET")
-def GetFingerprint(mac="mac"):
+def getFingerprint(mac="mac"):
     dicMac = carregarJsonMac()
     dicReturn = {}
     dicData = {}
@@ -196,7 +196,7 @@ def GetFingerprint(mac="mac"):
     return dicReturn
 
 @route('/getallmacsfromssid/<ssid>', method="GET")
-def getSSID(ssid="ssid"):
+def getAllMacsFromSSID(ssid="ssid"):
     dicSSID = carregarJsonSSIDs()
     dicReturn = {}
     dicData = {}
