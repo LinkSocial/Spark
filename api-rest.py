@@ -1,8 +1,7 @@
-from bottle import route, run
+from bottle import route, run, response, hook
 import json
 import math
 import os
-
 
 def retornaMaiorArquivo(diretorio):
     if os.path.exists(diretorio) and os.path.isdir(diretorio):
@@ -143,8 +142,12 @@ def getListOfMacs(dic):
         lista.append(dicTemp)
     return lista
 
+@hook('after_request')
+def enableCORSAfterRequestHook():
+    print ('After request hook.')
+    response.headers['Access-Control-Allow-Origin'] = '*'
 
-@route('/getsimilaridades/<macParameter>', method='GET')
+@route('/getsimilaridades/<macParameter>', method=['GET', 'OPTIONS'])
 def getSimilaridades( macParameter="Mystery Recipe" ):
     dicSSID = carregarJsonSSIDs()
     dicMac = carregarJsonMac()
@@ -162,7 +165,7 @@ def getSimilaridades( macParameter="Mystery Recipe" ):
         dicRetornoAPI["message"] = "Mac address not found"
         return dicRetornoAPI
 
-@route('/getallmacs/', method='GET')
+@route('/getallmacs/', method=['GET', 'OPTIONS'])
 def getAllMacs():
     dicMac = carregarJsonMac()
     response = getListOfMacs(dicMac)
@@ -177,7 +180,7 @@ def getAllMacs():
         dicReturn["message"] = "There arent macs"
     return dicReturn
 
-@route('/getfingerprint/<mac>', method="GET")
+@route('/getfingerprint/<mac>', method=['GET', 'OPTIONS'])
 def getFingerprint(mac="mac"):
     dicMac = carregarJsonMac()
     dicReturn = {}
@@ -195,7 +198,7 @@ def getFingerprint(mac="mac"):
         dicReturn["message"] = "There arent fingerprint for this mac"
     return dicReturn
 
-@route('/getallmacsfromssid/<ssid>', method="GET")
+@route('/getallmacsfromssid/<ssid>', method=['GET', 'OPTIONS'])
 def getAllMacsFromSSID(ssid="ssid"):
     dicSSID = carregarJsonSSIDs()
     dicReturn = {}
