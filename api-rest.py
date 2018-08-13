@@ -241,8 +241,8 @@ def getAllMacsFromSSID(ssid="ssid"):
         dicReturn["message"] = "There arent Macs for this ssid"
     return dicReturn
 
-@route('/getfrequancyfromallssid/', method=['GET', 'OPTIONS'])
-def getFrequancyFromAllSSID():
+@route('/getpopularityfromallssid/', method=['GET', 'OPTIONS'])
+def getPopularityFromAllSSID():
     dicSSID = carregarJsonSSIDs()
     dicReturn = {}
     temp = dicSSID.keys()
