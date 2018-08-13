@@ -218,4 +218,4 @@ def getAllMacsFromSSID(ssid="ssid"):
     return dicReturn
 
 
-run(debug=True)
+run(host="127.0.0.1", debug=True)
