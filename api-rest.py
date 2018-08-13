@@ -82,7 +82,7 @@ def retornaFingerprint(mac,dicMacs,dicSSIDs):
     listaMac_Similaridades = []
 
     for i in listaMacs:
-        dicMac_Similarodade = {}
+        dicMac_Similaridade = {}
         if mac == i:
             continue
         dicFingerprintIterada = {}
@@ -91,9 +91,11 @@ def retornaFingerprint(mac,dicMacs,dicSSIDs):
         
         #FALTA DEFINIR UMA CONDICONAL PARA VERIFICAR SE EXISTE RELACIOmacParameterNTO ENTRE AS FP.
        
-        #dicMac_Similarodade[str(mac) + " - " + str(i)] = str(similaridade*100) + "%"
-        dicMac_Similarodade[str(i)] = similaridade
-        listaMac_Similaridades.append(dicMac_Similarodade)
+        #dicMac_Similaridade[str(mac) + " - " + str(i)] = str(similaridade*100) + "%"
+        if(similaridade >= 0.5):
+            dicMac_Similaridade["mac"] = str(i)
+            dicMac_Similaridade["similaridade"] = similaridade
+            listaMac_Similaridades.append(dicMac_Similaridade)
 
     return listaMac_Similaridades
 
@@ -132,6 +134,16 @@ def IDF(fingerprint1,fingerprint2,dic):
     else:
         return (0)
 
+def getListOfMacs(dic):
+    dicList = dic.keys()
+    lista = []
+    for i in dicList:
+        dicTemp = {}
+        dicTemp["mac"] = str(i)
+        lista.append(dicTemp)
+    return lista
+
+
 @route('/getsimilaridades/<macParameter>', method='GET')
 def getSimilaridades( macParameter="Mystery Recipe" ):
     dicSSID = carregarJsonSSIDs()
@@ -142,12 +154,65 @@ def getSimilaridades( macParameter="Mystery Recipe" ):
         resultadoAnalise = retornaFingerprint(macParameter,dicMac,dicSSID)
         dicRetornoAPI["status"] = "success"
         dicRetornoAPI["data"] = resultadoAnalise
-        dicRetornoAPI["message"] = "Returns all Macs with similarity"
+        dicRetornoAPI["message"] = "Return all Macs with similarity"
         return dicRetornoAPI
     else:
         dicRetornoAPI["status"] = "fail"
         dicRetornoAPI["data"]=0
         dicRetornoAPI["message"] = "Mac address not found"
         return dicRetornoAPI
+
+@route('/getallmacs/', method='GET')
+def getAllMacs():
+    dicMac = carregarJsonMac()
+    response = getListOfMacs(dicMac)
+    dicReturn = {}
+    if(len(response) > 0):
+        dicReturn["status"] = "success"
+        dicReturn["data"] = response
+        dicReturn["message"] = "Return all Macs"
+    else:
+        dicReturn["status"] = "fail"
+        dicReturn["data"] = []
+        dicReturn["message"] = "There arent macs"
+    return dicReturn
+
+@route('/getfingerprint/<mac>', method="GET")
+def GetFingerprint(mac="mac"):
+    dicMac = carregarJsonMac()
+    dicReturn = {}
+    dicData = {}
+    if(len(dicMac.keys()) > 0):
+        fingerprint = dicMac[mac]
+        dicData["mac"] = mac
+        dicData["ssids"] = fingerprint
+        dicReturn["status"] = "success"
+        dicReturn["data"] = dicData
+        dicReturn["message"] = "Return one fingerprint"
+    else:
+        dicReturn["status"] = "fail"
+        dicReturn["data"] = []
+        dicReturn["message"] = "There arent fingerprint for this mac"
+    return dicReturn
+
+@route('/getallmacsfromssid/<ssid>', method="GET")
+def getSSID(ssid="ssid"):
+    dicSSID = carregarJsonSSIDs()
+    dicReturn = {}
+    dicData = {}
+    if(len(dicSSID.keys()) > 0):
+        amount_macs = len(dicSSID[ssid])
+        dicData["ssid"] = ssid
+        dicData["macs"] = dicSSID[ssid]
+        dicData["amount_macs"] = amount_macs
+        dicReturn["status"] = "success"
+        dicReturn["data"] = dicData
+        dicReturn["message"] = "Return the amount of Macs of this ssid"
+    else:
+        dicReturn["status"] = "fail"
+        dicReturn["data"] = []
+        dicReturn["message"] = "There arent Macs for this ssid"
+    return dicReturn
+
 
 run(debug=True)
