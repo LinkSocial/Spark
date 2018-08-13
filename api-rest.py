@@ -142,6 +142,15 @@ def getListOfMacs(dic):
         lista.append(dicTemp)
     return lista
 
+def getListOfSSID(dic):
+    dicList = dic.keys()
+    lista = []
+    for i in dicList:
+        dicTemp = {}
+        dicTemp["ssid"] = str(i)
+        lista.append(dicTemp)
+    return lista
+
 @hook('after_request')
 def enableCORSAfterRequestHook():
     print ('After request hook.')
@@ -180,6 +189,21 @@ def getAllMacs():
         dicReturn["message"] = "There arent macs"
     return dicReturn
 
+@route('/getallssid/', method=['GET', 'OPTIONS'])
+def getAllSSID():
+    dicMac = carregarJsonSSIDs()
+    response = getListOfSSID(dicMac)
+    dicReturn = {}
+    if(len(response) > 0):
+        dicReturn["status"] = "success"
+        dicReturn["data"] = response
+        dicReturn["message"] = "Return all SSID"
+    else:
+        dicReturn["status"] = "fail"
+        dicReturn["data"] = []
+        dicReturn["message"] = "There arent SSID"
+    return dicReturn
+
 @route('/getfingerprint/<mac>', method=['GET', 'OPTIONS'])
 def getFingerprint(mac="mac"):
     dicMac = carregarJsonMac()
@@ -210,6 +234,29 @@ def getAllMacsFromSSID(ssid="ssid"):
         dicData["amount_macs"] = amount_macs
         dicReturn["status"] = "success"
         dicReturn["data"] = dicData
+        dicReturn["message"] = "Return the amount of Macs of this ssid"
+    else:
+        dicReturn["status"] = "fail"
+        dicReturn["data"] = []
+        dicReturn["message"] = "There arent Macs for this ssid"
+    return dicReturn
+
+@route('/getfrequancyfromallssid/', method=['GET', 'OPTIONS'])
+def getFrequancyFromAllSSID():
+    dicSSID = carregarJsonSSIDs()
+    dicReturn = {}
+    temp = dicSSID.keys()
+    lista = []
+    if(len(temp) > 0):
+        for ssid in temp:
+            dicData = {}
+            amount_macs = len(dicSSID[ssid])
+            dicData["ssid"] = ssid
+            dicData["macs"] = dicSSID[ssid]
+            dicData["amount_macs"] = amount_macs
+            lista.append(dicData)
+        dicReturn["status"] = "success"
+        dicReturn["data"] = lista
         dicReturn["message"] = "Return the amount of Macs of this ssid"
     else:
         dicReturn["status"] = "fail"
